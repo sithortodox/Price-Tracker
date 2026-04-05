@@ -1,12 +1,15 @@
 from __future__ import annotations
 
 import argparse
+import asyncio
 import json
 
 from sqlalchemy import select
 
 from app.db import SessionLocal
 from app.models import PriceHistory, TrackedProduct
+from app.service import run_check_cycle
+from app.trackers.generic_html import GenericHtmlTracker
 
 
 def cmd_list(_: argparse.Namespace) -> None:
@@ -95,6 +98,22 @@ def cmd_delete(args: argparse.Namespace) -> None:
         print(f"Product {args.id} deleted")
 
 
+def build_default_trackers() -> list[GenericHtmlTracker]:
+    return [
+        GenericHtmlTracker(
+            title_selector="h1",
+            price_selector="[data-price], .price, .product-price, .price__current",
+            in_stock_selector=".availability, .stock, .product-availability",
+            out_of_stock_text="нет в наличии",
+        )
+    ]
+
+
+async def cmd_check_once(_: argparse.Namespace) -> None:
+    await run_check_cycle(build_default_trackers())
+    print("Check cycle completed")
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Price Tracker CLI")
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -124,13 +143,18 @@ def build_parser() -> argparse.ArgumentParser:
     delete_parser.add_argument("--id", type=int, required=True)
     delete_parser.set_defaults(func=cmd_delete)
 
+    check_once_parser = subparsers.add_parser("check-once", help="Run one manual check cycle")
+    check_once_parser.set_defaults(func=cmd_check_once)
+
     return parser
 
 
 def main() -> None:
     parser = build_parser()
     args = parser.parse_args()
-    args.func(args)
+    result = args.func(args)
+    if asyncio.iscoroutine(result):
+        asyncio.run(result)
 
 
 if __name__ == "__main__":

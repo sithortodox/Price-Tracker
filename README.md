@@ -119,6 +119,11 @@ python3 -m app.cli deactivate --id 1
 python3 -m app.cli delete --id 1
 ```
 
+### Запустить одну ручную проверку
+```bash
+python3 -m app.cli check-once
+```
+
 ## Demo flow
 ### Подготовить демо-данные
 ```bash
