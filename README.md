@@ -73,7 +73,10 @@ cp .env.example .env
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
+export PYTHONPATH=.
 ```
+
+> `.env.example` настроен под локальный запуск Python + PostgreSQL в Docker на `127.0.0.1`.
 
 ### 2. Запустить PostgreSQL
 ```bash
@@ -88,6 +91,8 @@ python3 -m app.main
 ## Demo flow
 ### Подготовить демо-данные
 ```bash
+source .venv/bin/activate
+export PYTHONPATH=.
 python3 scripts/seed_demo_data.py
 ```
 
@@ -106,10 +111,34 @@ python3 scripts/show_history.py
 bash scripts/run_demo.sh
 ```
 
+Скрипт сам:
+- инициализирует таблицы БД;
+- создаёт demo-product;
+- генерирует историю цены;
+- строит график;
+- выводит историю в консоль.
+
 После этого график будет сохранён в:
 ```text
 artifacts/demo_price_history.png
 ```
+
+## Example output
+### История цены
+```text
+=== Demo Console (id=1) ===
+2026-03-24T20:10:13.988647+00:00 | price=56990.0 | in_stock=False
+2026-03-27T20:10:13.988647+00:00 | price=55990.0 | in_stock=False
+2026-03-30T20:10:13.988647+00:00 | price=54990.0 | in_stock=True
+2026-04-02T20:10:13.988647+00:00 | price=52990.0 | in_stock=True
+2026-04-05T20:10:13.988647+00:00 | price=49990.0 | in_stock=True
+```
+
+### График
+Добавь в репозиторий или в описание релиза изображение:
+- `artifacts/demo_price_history.png`
+
+Его стоит использовать как главный визуальный артефакт проекта.
 
 ## Запуск через Docker Compose
 ```bash
