@@ -33,6 +33,7 @@
 - `app/notifier.py` — Telegram-уведомления
 - `app/plotting.py` — построение графиков
 - `app/scheduler.py` — циклический запуск проверки
+- `app/cli.py` — CLI для управления товарами
 - `app/main.py` — точка входа
 - `scripts/seed_demo_data.py` — создание демо-товара
 - `scripts/generate_demo_history.py` — генерация демо-истории и графика
@@ -86,6 +87,36 @@ docker compose up -d postgres
 ### 3. Запустить приложение
 ```bash
 python3 -m app.main
+```
+
+## CLI
+### Показать список товаров
+```bash
+python3 -m app.cli list
+```
+
+### Добавить товар
+```bash
+python3 -m app.cli add \
+  --title "Demo Console" \
+  --url "https://example.com/product/demo-console" \
+  --source generic_html \
+  --selectors '{"title":"h1","price":".price","stock":".availability","out_of_stock_text":"нет в наличии"}'
+```
+
+### Посмотреть историю
+```bash
+python3 -m app.cli history --id 1
+```
+
+### Отключить товар
+```bash
+python3 -m app.cli deactivate --id 1
+```
+
+### Удалить товар
+```bash
+python3 -m app.cli delete --id 1
 ```
 
 ## Demo flow
