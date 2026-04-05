@@ -134,24 +134,17 @@ artifacts/demo_price_history.png
 2026-04-05T20:10:13.988647+00:00 | price=49990.0 | in_stock=True
 ```
 
-### График
-Добавь в репозиторий или в описание релиза изображение:
-- `artifacts/demo_price_history.png`
-
-Его стоит использовать как главный визуальный артефакт проекта.
+### Артефакты demo
+После выполнения demo flow проект:
+- сохраняет график истории цены в `artifacts/demo_price_history.png`;
+- выводит историю изменений в консоль;
+- подготавливает данные для дальнейшего расширения трекеров и уведомлений.
 
 ## Запуск через Docker Compose
 ```bash
 cp .env.example .env
 docker compose up --build
 ```
-
-## Что хорошо показать в GitHub
-- `artifacts/demo_price_history.png` как пример графика;
-- кусок консольной истории из `show_history.py`;
-- пример `.env.example`;
-- пример JSON-селекторов;
-- GIF/скрин Telegram-уведомления при изменении цены.
 
 ## Roadmap
 - добавить CLI для управления товарами;
