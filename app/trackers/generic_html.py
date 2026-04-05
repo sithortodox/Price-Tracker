@@ -48,6 +48,16 @@ class GenericHtmlTracker(BaseTracker):
         self.in_stock_selector = in_stock_selector
         self.out_of_stock_text = (out_of_stock_text or "").strip().lower()
 
+    @classmethod
+    def from_selectors(cls, selectors: dict | None) -> "GenericHtmlTracker":
+        selectors = selectors or {}
+        return cls(
+            title_selector=str(selectors.get("title") or "h1"),
+            price_selector=str(selectors.get("price") or "[data-price], .price, .product-price, .price__current"),
+            in_stock_selector=str(selectors.get("stock") or ".availability, .stock, .product-availability"),
+            out_of_stock_text=str(selectors.get("out_of_stock_text") or "нет в наличии"),
+        )
+
     def can_handle(self, url: str) -> bool:
         return url.startswith("http://") or url.startswith("https://")
 

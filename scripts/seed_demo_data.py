@@ -10,12 +10,18 @@ def main() -> None:
             return
 
         product = TrackedProduct(
-            source="demo_store",
+            source="generic_html",
             title="Demo Console",
             url="https://example.com/product/demo-console",
             sku="DEMO-CONSOLE-001",
             currency="RUB",
             target_price=49990,
+            selectors={
+                "title": "h1",
+                "price": ".price",
+                "stock": ".availability",
+                "out_of_stock_text": "нет в наличии",
+            },
             is_active=True,
         )
         session.add(product)

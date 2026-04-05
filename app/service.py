@@ -9,6 +9,7 @@ from app.db import SessionLocal
 from app.models import PriceHistory, TrackedProduct
 from app.notifier import send_telegram_message
 from app.trackers.base import BaseTracker, ProductSnapshot
+from app.trackers.generic_html import GenericHtmlTracker
 
 logger = logging.getLogger(__name__)
 
@@ -45,6 +46,8 @@ async def run_check_cycle(trackers: Iterable[BaseTracker]) -> None:
 
         for product in products:
             tracker = next((item for item in tracker_list if item.can_handle(product.url)), None)
+            if tracker is None and product.source == "generic_html":
+                tracker = GenericHtmlTracker.from_selectors(product.selectors)
             if tracker is None:
                 logger.warning("No tracker found for product id=%s url=%s", product.id, product.url)
                 continue
