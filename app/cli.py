@@ -74,6 +74,32 @@ def cmd_history(args: argparse.Namespace) -> None:
             print(f"{row.checked_at.isoformat()} | price={row.price} | in_stock={row.in_stock}")
 
 
+def cmd_update(args: argparse.Namespace) -> None:
+    with SessionLocal() as session:
+        product = session.execute(select(TrackedProduct).where(TrackedProduct.id == args.id)).scalar_one_or_none()
+        if product is None:
+            print("Product not found")
+            return
+
+        if args.title is not None:
+            product.title = args.title
+        if args.url is not None:
+            product.url = args.url
+        if args.sku is not None:
+            product.sku = args.sku
+        if args.currency is not None:
+            product.currency = args.currency
+        if args.target_price is not None:
+            product.target_price = args.target_price
+        if args.selectors is not None:
+            product.selectors = json.loads(args.selectors)
+        if args.active is not None:
+            product.is_active = args.active.lower() in {"1", "true", "yes", "y"}
+
+        session.commit()
+        print(f"Product {product.id} updated")
+
+
 def cmd_deactivate(args: argparse.Namespace) -> None:
     with SessionLocal() as session:
         product = session.execute(select(TrackedProduct).where(TrackedProduct.id == args.id)).scalar_one_or_none()
@@ -134,6 +160,17 @@ def build_parser() -> argparse.ArgumentParser:
     history_parser = subparsers.add_parser("history", help="Show product history")
     history_parser.add_argument("--id", type=int, required=True)
     history_parser.set_defaults(func=cmd_history)
+
+    update_parser = subparsers.add_parser("update", help="Update tracked product fields")
+    update_parser.add_argument("--id", type=int, required=True)
+    update_parser.add_argument("--title")
+    update_parser.add_argument("--url")
+    update_parser.add_argument("--sku")
+    update_parser.add_argument("--currency")
+    update_parser.add_argument("--target-price", type=float)
+    update_parser.add_argument("--selectors", help='JSON string, e.g. {"title":"h1","price":".price"}')
+    update_parser.add_argument("--active", choices=["true", "false", "1", "0", "yes", "no", "y", "n"])
+    update_parser.set_defaults(func=cmd_update)
 
     deactivate_parser = subparsers.add_parser("deactivate", help="Deactivate tracked product")
     deactivate_parser.add_argument("--id", type=int, required=True)
